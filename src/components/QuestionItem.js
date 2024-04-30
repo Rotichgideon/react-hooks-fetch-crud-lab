@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-function QuestionItem({ question }) {
+function QuestionItem({ question, onDelete }) {
   const { id, prompt, answers, correctIndex } = question;
 
   const options = answers.map((answer, index) => (
@@ -8,6 +8,24 @@ function QuestionItem({ question }) {
       {answer}
     </option>
   ));
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  function handleDeleteClick () {
+    if (isDeleting) {
+      return
+    }
+
+    setIsDeleting(true);
+
+    onDelete(id)
+    .then(() => {
+      setIsDeleting(false)
+    })
+    .catch(() => {
+      setIsDeleting(false)
+    })
+  }
 
   return (
     <li>
@@ -17,7 +35,11 @@ function QuestionItem({ question }) {
         Correct Answer:
         <select defaultValue={correctIndex}>{options}</select>
       </label>
-      <button>Delete Question</button>
+      <button
+      onClick={handleDeleteClick}
+      disabled={isDeleting}
+      >
+        {isDeleting ? "Deleting..." : "Delete Question"}</button>
     </li>
   );
 }
